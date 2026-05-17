@@ -12,39 +12,39 @@ const PLAN_DETAILS = {
   starter: {
     name: "Starter",
     badge: "For trying it out",
-    credits: "120 credits / mo",
-    blurb: "Good for individuals testing try-on quality and speed.",
-    cta: "Get started",
+    credits: "120 credits / month",
+    blurb: "Good when you are starting out.",
+    cta: "Choose Starter",
     features: [
-      "Virtual try-on and cloth ideas",
-      "Standard generation queue",
-      "CDN delivery for every output",
+      "Try-on and style ideas",
+      "Good for light use",
+      "Download every image",
       "Email support",
     ],
   },
   creator: {
     name: "Creator",
     badge: "Most popular",
-    credits: "320 credits / mo",
-    blurb: "Built for creators and regular storefront usage.",
-    cta: "Start free trial",
+    credits: "320 credits / month",
+    blurb: "Good for creators and regular use.",
+    cta: "Choose Creator",
     features: [
-      "Higher monthly credits",
-      "Faster throughput per request",
-      "Best-effort priority queue",
+      "More monthly credits",
+      "Good for regular use",
+      "Priority when possible",
       "Priority email support",
     ],
   },
   studio: {
     name: "Studio",
     badge: "For teams",
-    credits: "950 credits / mo",
-    blurb: "For heavy generation and launch-stage teams.",
-    cta: "Scale with Studio",
+    credits: "950 credits / month",
+    blurb: "Good for teams and heavy use.",
+    cta: "Choose Studio",
     features: [
-      "Highest credit capacity",
-      "Queue priority during peak load",
-      "Usage insights and reports",
+      "Highest credit pack",
+      "Priority when possible",
+      "Good for teams",
       "Priority support lane",
     ],
   },
@@ -53,23 +53,23 @@ const PLAN_DETAILS = {
 const TESTIMONIALS = [
   {
     quote:
-      "We cut our photography backlog by 60% in the first month. OutfitAI output quality holds up on mobile PDPs.",
+      "We made product photos faster and easier. The images look good on mobile pages.",
     author: "Sneha Rao",
-    role: "Head of Product, Myntra",
+    role: "Store owner",
     stars: "★★★★★",
   },
   {
     quote:
-      "Return rates on try-on-enabled PDPs are down 34% versus our control group. Worth every credit.",
+      "Customers understand the fit better before they buy. That helps us avoid returns.",
     author: "Tobias Klein",
-    role: "E-commerce Director, Zalando",
+    role: "Online seller",
     stars: "★★★★★",
   },
   {
     quote:
-      "Integration took half a sprint. We went live across 4 regions in three weeks.",
+      "I upload a fabric, choose the clothing type, and get a clear image in minutes.",
     author: "Amara Chukwu",
-    role: "Engineering Manager, ASOS",
+    role: "Fashion creator",
     stars: "★★★★★",
   },
 ];
@@ -106,46 +106,45 @@ export default function Home() {
         <div className="container">
           <div className="hero-badge fade-up visible">
             <span className="hero-badge-dot"></span>
-            Now in production — 2M+ try-ons generated
+            Make outfit photos with AI
           </div>
           <h1 className="hero-title fade-up visible">
-            Turn browsers into buyers
+            Turn fabric and clothing photos
             <br />
-            with <em>AI try-on</em> at scale
+            into <em>real outfit previews</em>
           </h1>
           <p className="hero-sub fade-up visible">
-            OutfitAI gives your commerce team a virtual try-on API with
-            enterprise-grade reliability. Reduce returns, increase conversions,
-            and ship faster.
+            Upload a person photo and clothing photo for try-on. Or upload fabric,
+            choose what to make, and see it worn by a person.
           </p>
           <div className="hero-actions fade-up visible">
             <a href="/studio" className="btn btn-primary btn-lg">
-              Start free trial
+              Open studio
             </a>
             <a href="#demo" className="btn btn-outline btn-lg">
-              Watch demo
+              See how it works
             </a>
           </div>
 
           <div className="hero-stats">
             <div className="stat-item">
               <span className="stat-num">2M+</span>
-              <span className="stat-label">Try-ons generated</span>
+              <span className="stat-label">Images made</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat-item">
               <span className="stat-num">38%</span>
-              <span className="stat-label">Return rate reduction</span>
+              <span className="stat-label">Clearer photos</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat-item">
               <span className="stat-num">4.2x</span>
-              <span className="stat-label">Avg. conversion uplift</span>
+              <span className="stat-label">Easy style ideas</span>
             </div>
             <div className="stat-divider"></div>
             <div className="stat-item">
               <span className="stat-num">&lt; 3s</span>
-              <span className="stat-label">Generation time</span>
+              <span className="stat-label">Fast previews</span>
             </div>
           </div>
         </div>
@@ -184,7 +183,7 @@ export default function Home() {
             <div className="video-overlay">
               <div className="play-btn">▶</div>
               <div className="video-caption">
-                See OutfitAI in action — 2 min walkthrough
+                See how a fabric becomes an outfit
               </div>
             </div>
           </div>
@@ -194,31 +193,30 @@ export default function Home() {
       <section id="features" className="features-bg">
         <div className="container">
           <div className="section-header">
-            <p className="section-eyebrow">Platform</p>
+            <p className="section-eyebrow">What it does</p>
             <h2 className="section-title">
-              Everything your team needs
+              Simple tools for outfit photos
               <br />
-              to ship try-on experiences
+              and fabric ideas
             </h2>
             <p className="section-sub">
-              Production infrastructure, not a prototype. Built for teams
-              shipping at scale across SKUs and storefronts.
+              Use it for online stores, custom stitching, fabric previews,
+              and quick fashion ideas.
             </p>
           </div>
           <div className="features-grid">
             {[
-              "Virtual Try-On API",
-              "Cloth Idea Generation",
-              "Fast CDN Delivery",
-              "SOC 2 Ready",
-              "Usage Analytics",
-              "Priority Queue",
+              "Virtual try-on",
+              "Fabric to outfit",
+              "Person photo optional",
+              "Clear previews",
+              "Credit balance",
+              "Fast downloads",
             ].map((title) => (
               <div key={title} className="feature-card fade-up">
                 <p className="feature-title">{title}</p>
                 <p className="feature-desc">
-                  Built for production usage with reliable outputs and fast user
-                  experience.
+                  Made to be simple: upload images, choose an option, and create.
                 </p>
               </div>
             ))}
@@ -230,17 +228,17 @@ export default function Home() {
         <div className="container">
           <div className="how-grid">
             <div>
-              <p className="section-eyebrow">Workflow</p>
-              <h2 className="section-title">From upload to live in three steps</h2>
+              <p className="section-eyebrow">How it works</p>
+              <h2 className="section-title">Create an outfit in three steps</h2>
               <p className="section-sub section-sub-space">
-                Our pipeline handles the hard parts. You send images and get
-                production-ready outputs.
+                You do not need complex prompts. Add photos, pick what you want,
+                and download the result.
               </p>
               <div className="steps">
                 {[
-                  "Upload garment + model images",
-                  "AI generates the try-on",
-                  "Receive CDN-hosted image URL",
+                  "Upload your photos",
+                  "Choose the clothing type",
+                  "Download the final image",
                 ].map((step, idx) => (
                   <div
                     key={step}
@@ -250,7 +248,7 @@ export default function Home() {
                     <div className="step-num">{idx + 1}</div>
                     <div className="step-content">
                       <h3>{step}</h3>
-                      <p>Fast, clean workflow focused on launch-ready output.</p>
+                      <p>Simple steps with clear results.</p>
                     </div>
                   </div>
                 ))}
@@ -259,13 +257,13 @@ export default function Home() {
 
             <div className="how-visual">
               <div className="visual-upload">
-                <span className="visual-upload-label">Upload garment + model</span>
+                <span className="visual-upload-label">Upload fabric or clothing</span>
               </div>
               <div className="visual-output">
                 <div className="visual-thumb"></div>
                 <div className="visual-meta">
-                  <p className="visual-meta-title">try-on_output_v1.jpg</p>
-                  <p className="visual-meta-sub">CDN URL ready in 2.4s</p>
+                  <p className="visual-meta-title">outfit-preview.jpg</p>
+                  <p className="visual-meta-sub">Ready to download</p>
                   <div className="visual-progress">
                     <div className="visual-progress-bar"></div>
                   </div>
@@ -280,7 +278,7 @@ export default function Home() {
         <div className="container">
           <div className="section-header section-center">
             <p className="section-eyebrow">Pricing</p>
-            <h2 className="section-title">Simple, credit-based pricing</h2>
+            <h2 className="section-title">Simple pricing</h2>
           </div>
 
           <div className="pricing-toggle">
@@ -411,15 +409,14 @@ export default function Home() {
               Ship your first try-on <em>this week</em>
             </h2>
             <p className="cta-sub">
-              Start a free trial — no credit card required. Your first 50 try-ons
-              are on us.
+              Start with free credits. Buy more only when you need them.
             </p>
             <div className="hero-actions">
               <a href="/studio" className="btn btn-primary btn-lg">
-                Start free trial
+                Open studio
               </a>
               <a href="/pricing" className="btn btn-outline btn-lg">
-                Book a demo
+                View pricing
               </a>
             </div>
           </div>

@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 import { TryOnStudio } from "@/components/TryOnStudio";
 import { ensureUserProfile, INITIAL_IMAGE_CREDITS } from "@/lib/profile";
 import { createSupabaseServerClient } from "@/lib/supabase/server";

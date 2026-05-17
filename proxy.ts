@@ -5,13 +5,12 @@ function isProtectedPath(pathname: string) {
   return pathname.startsWith("/studio") || pathname.startsWith("/account");
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) {
-    // Avoid crashing the whole app if env isn't loaded (common in local dev).
     return response;
   }
 
@@ -29,7 +28,6 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Refresh session if needed (Supabase SSR best practice).
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -53,12 +51,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for:
-     * - _next static files
-     * - static assets
-     * - api routes (handled separately)
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$|api/).*)",
   ],
 };

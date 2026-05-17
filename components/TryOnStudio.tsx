@@ -2,6 +2,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
+import Link from "next/link";
 import { GenerationProgress } from "@/components/GenerationProgress";
 
 type Mode = "tryon" | "cloth";
@@ -367,7 +368,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
     );
   };
 
-  const activeInputs = mode === "tryon" ? [person.file, clothing.file] : [item.file];
+  const activeInputs = mode === "tryon" ? [person.file, clothing.file] : [item.file, clothingType];
   const completedSteps = activeInputs.filter(Boolean).length + (prompt.trim() ? 1 : 0) + (resultDataUrls.length ? 1 : 0);
 
   return (
@@ -452,15 +453,25 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
               <h1 className="mt-2 text-2xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">{modeCopy[mode].title}</h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-white/52">{modeCopy[mode].detail}</p>
             </div>
-            <button
-              type="button"
-              disabled={!canGenerate}
-              onClick={() => void run()}
-              className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#6df0d0] px-6 text-sm font-extrabold text-[#05070d] shadow-[0_18px_55px_rgba(109,240,208,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8cf8dd] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-white/[0.1] disabled:text-white/35 disabled:shadow-none"
-            >
-              {busy ? "Creating…" : `${modeCopy[mode].cta} · 1 credit`}
-              {!busy && <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />}
-            </button>
+            {credits <= 0 ? (
+              <Link
+                href="/pricing"
+                className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#6df0d0] px-6 text-sm font-extrabold text-[#05070d] shadow-[0_18px_55px_rgba(109,240,208,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8cf8dd]"
+              >
+                Buy more credits
+                <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled={!canGenerate}
+                onClick={() => void run()}
+                className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#6df0d0] px-6 text-sm font-extrabold text-[#05070d] shadow-[0_18px_55px_rgba(109,240,208,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8cf8dd] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-white/[0.1] disabled:text-white/35 disabled:shadow-none"
+              >
+                {busy ? "Creating..." : `${modeCopy[mode].cta} - 1 credit`}
+                {!busy && <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />}
+              </button>
+            )}
           </div>
 
           <div className="grid gap-5 xl:grid-cols-[1fr_390px]">

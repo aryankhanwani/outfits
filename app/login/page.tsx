@@ -1,10 +1,13 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
+function LoginInner() {
+  const search = useSearchParams();
+  const router = useRouter();
   const [mode, setMode] = useState<"login" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,10 +17,11 @@ export default function LoginPage() {
   const busy = status === "busy";
 
   const authRedirectTo = (): string | undefined => {
+    const next = search.get("redirect") || "/studio";
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-    if (siteUrl) return `${siteUrl}/auth/callback`;
+    if (siteUrl) return `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`;
     if (typeof window !== "undefined") {
-      return `${window.location.origin}/auth/callback`;
+      return `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
     }
     return undefined;
   };
@@ -59,7 +63,7 @@ export default function LoginPage() {
           password,
         });
         if (error) throw error;
-        window.location.href = "/studio";
+        router.push(search.get("redirect") || "/studio");
       }
     } catch (e) {
       setMessage(e instanceof Error ? e.message : "Something went wrong.");
@@ -71,12 +75,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#07070f] text-[#f8f4ec]">
       <div className="mx-auto flex w-full max-w-xl flex-col px-4 pb-24 pt-14 sm:px-6">
-        <a
+        <Link
           href="/"
           className="mb-8 inline-flex items-center gap-2 self-center text-sm font-semibold text-[#b9b6c8] hover:text-white"
         >
           <span className="text-lg">←</span> Back to home
-        </a>
+        </Link>
 
         <div className="rounded-[30px] border border-white/[0.08] bg-white/[0.05] p-6 shadow-[0_24px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-10">
           <h1 className="text-balance text-3xl font-semibold tracking-[-0.06em] text-white">
@@ -182,3 +186,10 @@ export default function LoginPage() {
   );
 }
 
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginInner />
+    </Suspense>
+  );
+}

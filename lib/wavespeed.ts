@@ -14,7 +14,8 @@ export const DEFAULT_TRY_ON_PROMPT =
 
 export const DEFAULT_CLOTH_IDEAS_PROMPT =
   "You are given a single reference image of a garment or fabric. " +
-  "Generate ONE photorealistic product/on-model image that shows how this exact fabric/garment would look as the requested clothing style. " +
+  "Generate ONE photorealistic on-model image that shows how this exact fabric/garment would look as the requested clothing style. " +
+  "The clothing must be worn on a real adult model, not shown flat or floating. " +
   "Keep the material, pattern, print, color, texture and details faithful to the input. " +
   "Use a clean studio background, natural shadows, and realistic folds and seams. " +
   "Do NOT add logos or extra text. Do NOT change the print. " +

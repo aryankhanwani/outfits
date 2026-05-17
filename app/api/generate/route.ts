@@ -34,6 +34,7 @@ const MAX_BYTES = 4 * 1024 * 1024;
 function buildPrompt(args: {
   mode: "tryon" | "cloth";
   hasPerson: boolean;
+  clothingType: string;
   userPrompt: string;
 }): string {
   const parts = [
@@ -43,6 +44,15 @@ function buildPrompt(args: {
         : DEFAULT_CLOTH_IDEAS_PROMPT
       : DEFAULT_TRY_ON_PROMPT,
   ];
+  if (args.mode === "cloth") {
+    parts.push(
+      "",
+      `Clothing to create: ${args.clothingType}.`,
+      args.hasPerson
+        ? `Use the uploaded fabric to make a ${args.clothingType} and put it on the uploaded person.`
+        : `Use the uploaded fabric to make a ${args.clothingType} and show it worn by one real adult model. For shirts and t-shirts, use a male model unless the user asks for something else.`
+    );
+  }
   if (args.userPrompt.trim()) {
     parts.push("", "Additional direction:", args.userPrompt.trim());
   }
@@ -90,6 +100,7 @@ export async function POST(request: Request) {
   const person = form.get("person");
   const clothing = form.get("clothing");
   const item = form.get("item");
+  const clothingTypeRaw = form.get("clothingType");
   const promptRaw = form.get("prompt");
 
   if (mode === "tryon") {
@@ -141,7 +152,16 @@ export async function POST(request: Request) {
 
   const hasClothPerson =
     mode === "cloth" && person instanceof File ? true : false;
-  const fullPrompt = buildPrompt({ mode, hasPerson: hasClothPerson, userPrompt });
+  const clothingType =
+    typeof clothingTypeRaw === "string" && clothingTypeRaw.trim()
+      ? clothingTypeRaw.trim().slice(0, 40)
+      : "shirt";
+  const fullPrompt = buildPrompt({
+    mode,
+    hasPerson: hasClothPerson,
+    clothingType,
+    userPrompt,
+  });
 
   const jpegMime = mimeFromExtension("jpg");
 

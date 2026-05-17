@@ -2,7 +2,7 @@
 "use client";
 
 import { Suspense, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PLANS, priceFor, type BillingInterval, type PlanId, type PricingPlan } from "@/lib/plans";
 import { INITIAL_IMAGE_CREDITS } from "@/lib/profile";
 
@@ -37,6 +37,7 @@ function loadRazorpayScript(): Promise<void> {
 
 function PricingInner() {
   const search = useSearchParams();
+  const router = useRouter();
   const interval = (search.get("interval") === "annual" ? "annual" : "monthly") as BillingInterval;
   const toggleHref = (next: BillingInterval) => `/pricing?interval=${next}`;
   const plans = useMemo(() => PLANS, []);
@@ -59,7 +60,7 @@ function PricingInner() {
 
       if (orderRes.status === 401) {
         const next = encodeURIComponent(`/pricing?interval=${interval}&plan=${plan.id}`);
-        window.location.href = `/login?redirect=${next}`;
+        router.push(`/login?redirect=${next}`);
         return;
       }
       if (!orderRes.ok) {
@@ -91,7 +92,7 @@ function PricingInner() {
           if (!verifyRes.ok) {
             throw new Error(verifyJson.error || "Payment was made, but credits were not added.");
           }
-          window.location.href = "/studio";
+          router.push("/studio");
         },
         theme: { color: "#1bcea8" },
       };

@@ -18,11 +18,11 @@ function LoginInner() {
 
   const authRedirectTo = (): string | undefined => {
     const next = search.get("redirect") || "/studio";
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-    if (siteUrl) return `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`;
     if (typeof window !== "undefined") {
       return `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
     }
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    if (siteUrl) return `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`;
     return undefined;
   };
 

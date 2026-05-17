@@ -6,6 +6,14 @@ function isProtectedPath(pathname: string) {
 }
 
 export async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === "/" && request.nextUrl.searchParams.has("code")) {
+    const redirectUrl = request.nextUrl.clone();
+    const next = redirectUrl.searchParams.get("next") || "/studio";
+    redirectUrl.pathname = "/auth/callback";
+    redirectUrl.searchParams.set("next", next);
+    return NextResponse.redirect(redirectUrl);
+  }
+
   const response = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

@@ -447,7 +447,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
         </aside>
 
         <section className="min-w-0 p-4 sm:p-6 lg:p-7">
-          <div className="mb-6 flex flex-col gap-4 rounded-[30px] border border-white/[0.08] bg-white/[0.045] p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="sticky top-3 z-20 mb-4 flex flex-col gap-4 rounded-[30px] border border-white/[0.08] bg-[#0a0d17]/90 p-5 shadow-[0_18px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#6df0d0]">{modeCopy[mode].eyebrow}</p>
               <h1 className="mt-2 text-2xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">{modeCopy[mode].title}</h1>
@@ -471,6 +471,24 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
                 {busy ? "Creating..." : `${modeCopy[mode].cta} - 1 credit`}
                 {!busy && <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />}
               </button>
+            )}
+          </div>
+
+          <div className="mb-5 grid gap-3">
+            {busy && <GenerationProgress activeStep={loadingStep} progress={progress} elapsedSec={elapsedSec} tipIndex={tipIndex} />}
+
+            {error && (
+              <div role="alert" className="flex items-start gap-3 rounded-[24px] border border-red-300/25 bg-red-500/10 p-4 text-sm leading-6 text-red-100">
+                <Icon name="alert" className="mt-0.5 h-5 w-5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {statusMessage && !error && !busy && (
+              <div className="flex items-center gap-3 rounded-[24px] border border-[#6df0d0]/20 bg-[#6df0d0]/10 p-4 text-sm font-medium text-[#bfffee]">
+                <Icon name="check" className="h-5 w-5" />
+                {statusMessage}
+              </div>
             )}
           </div>
 
@@ -550,24 +568,9 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
                 />
               </div>
 
-              {busy && <GenerationProgress activeStep={loadingStep} progress={progress} elapsedSec={elapsedSec} tipIndex={tipIndex} />}
-
-              {error && (
-                <div role="alert" className="flex items-start gap-3 rounded-[24px] border border-red-300/25 bg-red-500/10 p-4 text-sm leading-6 text-red-100">
-                  <Icon name="alert" className="mt-0.5 h-5 w-5 shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {statusMessage && !error && !busy && (
-                <div className="flex items-center gap-3 rounded-[24px] border border-[#6df0d0]/20 bg-[#6df0d0]/10 p-4 text-sm font-medium text-[#bfffee]">
-                  <Icon name="check" className="h-5 w-5" />
-                  {statusMessage}
-                </div>
-              )}
             </div>
 
-            <aside className="rounded-[30px] border border-white/[0.09] bg-white/[0.045] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.2)] xl:sticky xl:top-6 xl:self-start">
+            <aside className="rounded-[30px] border border-white/[0.09] bg-white/[0.045] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.2)] xl:sticky xl:top-36 xl:self-start">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/35">Preview</p>

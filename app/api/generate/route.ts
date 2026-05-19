@@ -164,6 +164,25 @@ export async function POST(request: Request) {
   });
 
   const jpegMime = mimeFromExtension("jpg");
+  const nextCredits = Math.max(availableCredits - 1, 0);
+  const { error: debitError } = await admin
+    .from("profiles")
+    .update({ credits: nextCredits })
+    .eq("id", user.id);
+
+  if (debitError) {
+    return NextResponse.json(
+      { error: "Credit update failed.", detail: debitError.message },
+      { status: 500 }
+    );
+  }
+
+  const refundCredit = async () => {
+    await admin
+      .from("profiles")
+      .update({ credits: availableCredits })
+      .eq("id", user.id);
+  };
 
   let imageUrls: string[];
   try {
@@ -199,8 +218,9 @@ export async function POST(request: Request) {
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Upload failed.";
+    await refundCredit();
     return NextResponse.json(
-      { error: "Image upload failed.", detail: msg },
+      { error: "Image upload failed.", detail: msg, credits: availableCredits },
       { status: 502 }
     );
   }
@@ -254,33 +274,23 @@ export async function POST(request: Request) {
     outputs = result.outputs;
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Image generation failed.";
+    await refundCredit();
     return NextResponse.json(
-      { error: "Image generation failed.", detail: msg },
+      { error: "Image generation failed.", detail: msg, credits: availableCredits },
       { status: 502 }
     );
   }
 
   const outUrl = Array.isArray(outputs) ? outputs[0] : undefined;
   if (typeof outUrl !== "string" || !outUrl.startsWith("http")) {
+    await refundCredit();
     return NextResponse.json(
       {
         error: "Unexpected image response.",
         detail: "No output image URL in response.",
+        credits: availableCredits,
       },
       { status: 502 }
-    );
-  }
-
-  const nextCredits = Math.max(availableCredits - 1, 0);
-  const { error: creditError } = await admin
-    .from("profiles")
-    .update({ credits: nextCredits })
-    .eq("id", user.id);
-
-  if (creditError) {
-    return NextResponse.json(
-      { error: "Generated image, but credit update failed.", detail: creditError.message },
-      { status: 500 }
     );
   }
 

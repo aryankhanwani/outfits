@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useId, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { GenerationProgress } from "@/components/GenerationProgress";
 
 type Mode = "tryon" | "cloth";
@@ -93,6 +94,7 @@ function fileLabel(file: File | null) {
 }
 
 export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number }) {
+  const router = useRouter();
   const personInputId = useId();
   const clothingInputId = useId();
   const itemInputId = useId();
@@ -182,6 +184,8 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
       return;
     }
 
+    const creditsBeforeRun = credits;
+    setCredits((current) => Math.max(current - 1, 0));
     setStatus("generating");
 
     const fd = new FormData();
@@ -196,6 +200,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
     }
     if (prompt.trim()) fd.append("prompt", prompt.trim());
 
+    let returnedCredits: number | null = null;
     try {
       const genRes = await fetch("/api/generate", { method: "POST", body: fd });
       const genJson = (await genRes.json().catch(() => ({}))) as {
@@ -205,6 +210,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
         credits?: number;
       };
 
+      if (typeof genJson.credits === "number") returnedCredits = genJson.credits;
       if (!genRes.ok) throw new Error(genJson.error || genJson.detail || `Generation failed (${genRes.status})`);
       const imageUrl = genJson.imageUrl;
       if (!imageUrl?.startsWith("http")) throw new Error("No image was returned.");
@@ -212,13 +218,16 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
       const preload = new Image();
       preload.src = imageUrl;
       setResultDataUrls([imageUrl]);
-      if (typeof genJson.credits === "number") setCredits(genJson.credits);
+      if (returnedCredits !== null) setCredits(returnedCredits);
       setStatus("done");
       setStatusMessage("Your image is ready.");
+      router.refresh();
     } catch (e) {
+      setCredits(returnedCredits ?? creditsBeforeRun);
       setStatus("error");
       setStatusMessage("");
       setError(e instanceof Error ? e.message : "Something went wrong.");
+      router.refresh();
     }
   };
 
@@ -264,6 +273,18 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
       cta: "Generate style",
     },
   } as const;
+  const modeOptions = [
+    { id: "tryon" as const, icon: "shirt" as IconName, title: "Try-on", text: "Person + clothing" },
+    { id: "cloth" as const, icon: "brush" as IconName, title: "Style ideas", text: "Fabric + clothing type" },
+  ];
+
+  const selectMode = (nextMode: Mode) => {
+    setMode(nextMode);
+    setPrompt("");
+    setError(null);
+    setStatusMessage("");
+    setResultDataUrls([]);
+  };
 
   const DropZone = ({
     slot,
@@ -415,22 +436,13 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-3 lg:mt-6 lg:grid-cols-1">
-            {([
-              { id: "tryon" as const, icon: "shirt" as IconName, title: "Try-on", text: "Person + clothing" },
-              { id: "cloth" as const, icon: "brush" as IconName, title: "Style ideas", text: "Fabric + clothing type" },
-            ]).map((option) => (
+          <div className="mt-5 hidden gap-3 lg:mt-6 lg:grid">
+            {modeOptions.map((option) => (
               <button
                 key={option.id}
                 type="button"
                 disabled={busy}
-                onClick={() => {
-                  setMode(option.id);
-                  setPrompt("");
-                  setError(null);
-                  setStatusMessage("");
-                  setResultDataUrls([]);
-                }}
+                onClick={() => selectMode(option.id)}
                 className={`group flex min-w-0 items-center gap-3 rounded-3xl border p-3 text-left transition ${
                   mode === option.id
                     ? "border-[#6df0d0]/45 bg-[#6df0d0]/12 text-white shadow-[0_12px_45px_rgba(109,240,208,0.08)]"
@@ -474,6 +486,25 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
         </aside>
 
         <section className="order-1 min-w-0 p-3 sm:p-6 lg:order-2 lg:p-7">
+          <div className="mb-3 grid grid-cols-2 gap-2 rounded-[22px] border border-white/[0.08] bg-[#0a0d17]/90 p-2 shadow-[0_18px_70px_rgba(0,0,0,0.22)] backdrop-blur-2xl lg:hidden">
+            {modeOptions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                disabled={busy}
+                onClick={() => selectMode(option.id)}
+                className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-extrabold transition ${
+                  mode === option.id
+                    ? "bg-[#6df0d0] text-[#05070d] shadow-[0_12px_35px_rgba(109,240,208,0.16)]"
+                    : "bg-white/[0.055] text-white/58 hover:bg-white/[0.08] hover:text-white"
+                } disabled:cursor-not-allowed disabled:opacity-70`}
+              >
+                <Icon name={option.icon} className="h-4 w-4" />
+                {option.title}
+              </button>
+            ))}
+          </div>
+
           <div className="mb-4 flex flex-col gap-4 rounded-[24px] border border-white/[0.08] bg-[#0a0d17]/90 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl sm:rounded-[30px] sm:p-5 md:sticky md:top-20 md:z-20 md:flex-row md:items-center md:justify-between lg:top-3">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#6df0d0]">{modeCopy[mode].eyebrow}</p>
@@ -502,7 +533,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
           </div>
 
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
-            <div className="space-y-5">
+            <div className={`${busy ? "hidden md:block" : "block"} space-y-5`}>
               {mode === "tryon" ? (
                 <div className="grid gap-4 md:grid-cols-2 md:gap-5">
                   <DropZone slot="person" title="Person photo" subtitle="Full or half body with a visible pose." inputId={personInputId} state={person} icon="user" />

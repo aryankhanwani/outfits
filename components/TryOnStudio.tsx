@@ -284,7 +284,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
   }) => {
     const [dragging, setDragging] = useState(false);
     return (
-      <div className="rounded-[26px] border border-white/[0.09] bg-white/[0.045] p-3 shadow-[0_20px_80px_rgba(0,0,0,0.22)]">
+      <div className="rounded-[22px] border border-white/[0.09] bg-white/[0.045] p-3 shadow-[0_20px_80px_rgba(0,0,0,0.22)] sm:rounded-[26px]">
         <div className="mb-3 flex items-start justify-between gap-3 px-2 pt-2">
           <div className="flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white/[0.08] text-[#6df0d0] ring-1 ring-white/[0.09]">
@@ -326,7 +326,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
             setDragging(false);
             onFile(slot, e.dataTransfer.files?.[0] ?? null);
           }}
-          className={`relative flex min-h-[235px] cursor-pointer overflow-hidden rounded-[22px] border border-dashed transition ${
+          className={`relative flex min-h-[190px] cursor-pointer overflow-hidden rounded-[20px] border border-dashed transition sm:min-h-[235px] sm:rounded-[22px] ${
             dragging
               ? "border-[#6df0d0] bg-[#6df0d0]/10"
               : state.previewUrl
@@ -349,13 +349,13 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
 
           {state.previewUrl ? (
             <>
-              <img src={state.previewUrl} alt="Selected upload preview" className="h-full min-h-[235px] w-full object-contain p-3" />
+              <img src={state.previewUrl} alt="Selected upload preview" className="h-full min-h-[190px] w-full object-contain p-3 sm:min-h-[235px]" />
               <div className="absolute inset-x-3 bottom-3 rounded-2xl border border-white/[0.09] bg-black/55 px-3 py-2 text-xs text-white/75 backdrop-blur-xl">
                 <span className="line-clamp-1">{fileLabel(state.file)}</span>
               </div>
             </>
           ) : (
-            <div className="m-auto flex max-w-[250px] flex-col items-center px-6 text-center">
+            <div className="m-auto flex max-w-[250px] flex-col items-center px-5 text-center sm:px-6">
               <span className="grid h-14 w-14 place-items-center rounded-3xl bg-white/[0.07] text-[#6df0d0] ring-1 ring-white/[0.09]">
                 <Icon name="upload" className="h-6 w-6" />
               </span>
@@ -370,13 +370,40 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
 
   const activeInputs = mode === "tryon" ? [person.file, clothing.file] : [item.file, clothingType];
   const completedSteps = activeInputs.filter(Boolean).length + (prompt.trim() ? 1 : 0) + (resultDataUrls.length ? 1 : 0);
+  const actionLabel = busy ? "Creating..." : `${modeCopy[mode].cta} - 1 credit`;
+  const nextStep =
+    mode === "tryon"
+      ? person.file
+        ? clothing.file
+          ? "Ready to generate."
+          : "Add garment photo."
+        : "Add person photo."
+      : item.file
+        ? `Ready to make a ${clothingType}.`
+        : "Add fabric photo.";
+  const ctaClassName =
+    "group inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#6df0d0] px-6 text-sm font-extrabold text-[#05070d] shadow-[0_18px_55px_rgba(109,240,208,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8cf8dd]";
+  const disabledCtaClassName =
+    " disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-white/[0.1] disabled:text-white/35 disabled:shadow-none";
+  const renderPrimaryAction = () =>
+    credits <= 0 ? (
+      <Link href="/pricing" className={ctaClassName}>
+        Buy more credits
+        <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
+      </Link>
+    ) : (
+      <button type="button" disabled={!canGenerate} onClick={() => void run()} className={`${ctaClassName}${disabledCtaClassName}`}>
+        {actionLabel}
+        {!busy && <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />}
+      </button>
+    );
 
   return (
-    <div className="relative overflow-hidden rounded-[34px] border border-white/[0.08] bg-[#080a12] text-white shadow-[0_30px_120px_rgba(0,0,0,0.45)]">
+    <div className="relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-[#080a12] pb-24 text-white shadow-[0_30px_120px_rgba(0,0,0,0.45)] sm:rounded-[34px] lg:pb-0">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(109,240,208,0.16),transparent_34%),radial-gradient(circle_at_86%_10%,rgba(130,87,255,0.18),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.055),transparent_24%)]" />
 
-      <div className="relative grid min-h-[760px] lg:grid-cols-[360px_1fr]">
-        <aside className="border-b border-white/[0.08] bg-white/[0.035] p-5 backdrop-blur-xl lg:border-b-0 lg:border-r lg:p-6">
+      <div className="relative grid lg:min-h-[760px] lg:grid-cols-[360px_1fr]">
+        <aside className="border-b border-white/[0.08] bg-white/[0.035] p-4 backdrop-blur-xl sm:p-5 lg:border-b-0 lg:border-r lg:p-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#6df0d0]">Create</p>
@@ -388,7 +415,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3">
+          <div className="mt-5 grid grid-cols-2 gap-3 lg:mt-6 lg:grid-cols-1">
             {([
               { id: "tryon" as const, icon: "shirt" as IconName, title: "Try-on", text: "Person + clothing" },
               { id: "cloth" as const, icon: "brush" as IconName, title: "Style ideas", text: "Fabric + clothing type" },
@@ -404,7 +431,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
                   setStatusMessage("");
                   setResultDataUrls([]);
                 }}
-                className={`group flex items-center gap-3 rounded-3xl border p-3 text-left transition ${
+                className={`group flex min-w-0 items-center gap-3 rounded-3xl border p-3 text-left transition ${
                   mode === option.id
                     ? "border-[#6df0d0]/45 bg-[#6df0d0]/12 text-white shadow-[0_12px_45px_rgba(109,240,208,0.08)]"
                     : "border-white/[0.08] bg-white/[0.035] text-white/55 hover:border-white/[0.16] hover:bg-white/[0.065] hover:text-white"
@@ -422,7 +449,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
             ))}
           </div>
 
-          <div className="mt-7 rounded-3xl border border-white/[0.08] bg-black/20 p-4">
+          <div className="mt-5 rounded-3xl border border-white/[0.08] bg-black/20 p-4 sm:mt-7">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/35">Flow</p>
             <div className="mt-4 space-y-3">
               {[
@@ -440,38 +467,20 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
             </div>
           </div>
 
-          <div className="mt-5 rounded-3xl border border-white/[0.08] bg-white/[0.035] p-4">
+          <div className="mt-5 hidden rounded-3xl border border-white/[0.08] bg-white/[0.035] p-4 sm:block">
             <div className="flex items-center gap-2 text-sm font-semibold text-white"><Icon name="bolt" className="h-4 w-4 text-[#6df0d0]" /> Better results</div>
             <p className="mt-2 text-xs leading-5 text-white/45">Use clear photos and good light. One image uses one credit.</p>
           </div>
         </aside>
 
-        <section className="min-w-0 p-4 sm:p-6 lg:p-7">
-          <div className="sticky top-3 z-20 mb-4 flex flex-col gap-4 rounded-[30px] border border-white/[0.08] bg-[#0a0d17]/90 p-5 shadow-[0_18px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
+        <section className="min-w-0 p-3 sm:p-6 lg:p-7">
+          <div className="mb-4 flex flex-col gap-4 rounded-[24px] border border-white/[0.08] bg-[#0a0d17]/90 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl sm:rounded-[30px] sm:p-5 md:sticky md:top-20 md:z-20 md:flex-row md:items-center md:justify-between lg:top-3">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#6df0d0]">{modeCopy[mode].eyebrow}</p>
               <h1 className="mt-2 text-2xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">{modeCopy[mode].title}</h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-white/52">{modeCopy[mode].detail}</p>
             </div>
-            {credits <= 0 ? (
-              <Link
-                href="/pricing"
-                className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#6df0d0] px-6 text-sm font-extrabold text-[#05070d] shadow-[0_18px_55px_rgba(109,240,208,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8cf8dd]"
-              >
-                Buy more credits
-                <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
-              </Link>
-            ) : (
-              <button
-                type="button"
-                disabled={!canGenerate}
-                onClick={() => void run()}
-                className="group inline-flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-[#6df0d0] px-6 text-sm font-extrabold text-[#05070d] shadow-[0_18px_55px_rgba(109,240,208,0.24)] transition hover:-translate-y-0.5 hover:bg-[#8cf8dd] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-white/[0.1] disabled:text-white/35 disabled:shadow-none"
-              >
-                {busy ? "Creating..." : `${modeCopy[mode].cta} - 1 credit`}
-                {!busy && <Icon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />}
-              </button>
-            )}
+            <div className="hidden md:block">{renderPrimaryAction()}</div>
           </div>
 
           <div className="mb-5 grid gap-3">
@@ -492,15 +501,15 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
             )}
           </div>
 
-          <div className="grid gap-5 xl:grid-cols-[1fr_390px]">
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
             <div className="space-y-5">
               {mode === "tryon" ? (
-                <div className="grid gap-5 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2 md:gap-5">
                   <DropZone slot="person" title="Person photo" subtitle="Full or half body with a visible pose." inputId={personInputId} state={person} icon="user" />
                   <DropZone slot="clothing" title="Garment photo" subtitle="Flat lay, hanger, or product shot." inputId={clothingInputId} state={clothing} icon="shirt" />
                 </div>
               ) : (
-                <div className="grid gap-5 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2 md:gap-5">
                   <DropZone slot="item" title="Fabric photo" subtitle="Required. Upload the fabric, print, or textile you want to use." inputId={itemInputId} state={item} icon="image" />
                   <DropZone slot="person" title="Person photo" subtitle="Optional. Add this if you want the clothing on this person." inputId={personInputId} state={person} icon="user" required={false} />
                 </div>
@@ -535,7 +544,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
                 </div>
               )}
 
-              <div className="rounded-[26px] border border-white/[0.09] bg-white/[0.045] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.18)]">
+              <div className="rounded-[22px] border border-white/[0.09] bg-white/[0.045] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.18)] sm:rounded-[26px]">
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <div>
                     <div className="flex items-center gap-2 text-sm font-semibold text-white"><Icon name="wand" className="h-4 w-4 text-[#6df0d0]" /> Style direction</div>
@@ -570,7 +579,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
 
             </div>
 
-            <aside className="rounded-[30px] border border-white/[0.09] bg-white/[0.045] p-4 shadow-[0_20px_80px_rgba(0,0,0,0.2)] xl:sticky xl:top-36 xl:self-start">
+            <aside className="rounded-[24px] border border-white/[0.09] bg-white/[0.045] p-3 shadow-[0_20px_80px_rgba(0,0,0,0.2)] sm:rounded-[30px] sm:p-4 xl:sticky xl:top-36 xl:self-start">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/35">Preview</p>
@@ -579,7 +588,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
                 <span className="rounded-full border border-white/[0.1] px-3 py-1 text-xs font-semibold text-white/45">{completedSteps}/4 ready</span>
               </div>
 
-              <div className="relative grid min-h-[430px] place-items-center overflow-hidden rounded-[26px] border border-white/[0.08] bg-[#0a0d17]">
+              <div className="relative grid min-h-[300px] place-items-center overflow-hidden rounded-[22px] border border-white/[0.08] bg-[#0a0d17] sm:min-h-[430px] sm:rounded-[26px]">
                 <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.035)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.035)_50%,rgba(255,255,255,0.035)_75%,transparent_75%,transparent)] bg-[length:24px_24px] opacity-25" />
 
                 {resultDataUrls.length > 0 ? (
@@ -626,6 +635,13 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
             </aside>
           </div>
         </section>
+      </div>
+      <div className="fixed inset-x-3 bottom-3 z-40 rounded-[24px] border border-white/[0.1] bg-[#0a0d17]/95 p-3 shadow-[0_18px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl md:hidden">
+        <div className="mb-2 flex items-center justify-between gap-3 px-1">
+          <span className="text-xs font-semibold text-white/52">{nextStep}</span>
+          <span className="shrink-0 text-xs font-bold text-[#6df0d0]">{credits} credits</span>
+        </div>
+        <div className="[&>*]:w-full">{renderPrimaryAction()}</div>
       </div>
     </div>
   );

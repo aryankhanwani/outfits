@@ -403,7 +403,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(109,240,208,0.16),transparent_34%),radial-gradient(circle_at_86%_10%,rgba(130,87,255,0.18),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.055),transparent_24%)]" />
 
       <div className="relative grid lg:min-h-[760px] lg:grid-cols-[360px_1fr]">
-        <aside className="border-b border-white/[0.08] bg-white/[0.035] p-4 backdrop-blur-xl sm:p-5 lg:border-b-0 lg:border-r lg:p-6">
+        <aside className="order-2 border-t border-white/[0.08] bg-white/[0.035] p-4 backdrop-blur-xl sm:p-5 lg:order-1 lg:border-r lg:border-t-0 lg:p-6">
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#6df0d0]">Create</p>
@@ -473,7 +473,7 @@ export function TryOnStudio({ initialCredits = 0 }: { initialCredits?: number })
           </div>
         </aside>
 
-        <section className="min-w-0 p-3 sm:p-6 lg:p-7">
+        <section className="order-1 min-w-0 p-3 sm:p-6 lg:order-2 lg:p-7">
           <div className="mb-4 flex flex-col gap-4 rounded-[24px] border border-white/[0.08] bg-[#0a0d17]/90 p-4 shadow-[0_18px_70px_rgba(0,0,0,0.28)] backdrop-blur-2xl sm:rounded-[30px] sm:p-5 md:sticky md:top-20 md:z-20 md:flex-row md:items-center md:justify-between lg:top-3">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#6df0d0]">{modeCopy[mode].eyebrow}</p>

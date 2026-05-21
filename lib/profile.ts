@@ -5,22 +5,45 @@ export const INITIAL_IMAGE_CREDITS = Number.parseInt(
   10
 );
 
+type EnsureUserProfileOptions = {
+  grantInitialCredits?: boolean;
+};
+
 export async function ensureUserProfile(
   supabase: SupabaseClient,
-  user: User
+  user: User,
+  options: EnsureUserProfileOptions = {}
 ): Promise<{ credits: number | null }> {
   const startingCredits = Number.isFinite(INITIAL_IMAGE_CREDITS)
     ? INITIAL_IMAGE_CREDITS
     : 25;
 
-  await supabase.from("profiles").upsert(
-    {
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("credits")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!existing) {
+    await supabase.from("profiles").insert({
       id: user.id,
       email: user.email ?? null,
       credits: startingCredits,
-    },
-    { onConflict: "id", ignoreDuplicates: true }
-  );
+    });
+  } else {
+    const credits =
+      typeof existing.credits === "number" ? existing.credits : null;
+    const shouldGrantInitialCredits =
+      options.grantInitialCredits && (credits === null || credits <= 0);
+    const shouldBackfillMissingCredits = credits === null;
+
+    if (shouldGrantInitialCredits || shouldBackfillMissingCredits) {
+      await supabase
+        .from("profiles")
+        .update({ credits: startingCredits })
+        .eq("id", user.id);
+    }
+  }
 
   if (user.email) {
     await supabase

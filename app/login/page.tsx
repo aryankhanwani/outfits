@@ -16,13 +16,14 @@ function LoginInner() {
 
   const busy = status === "busy";
 
-  const authRedirectTo = (): string | undefined => {
+  const authRedirectTo = (grantInitialCredits = false): string | undefined => {
     const next = search.get("redirect") || "/studio";
+    const initialCreditsParam = grantInitialCredits ? "&initial_credits=1" : "";
     if (typeof window !== "undefined") {
-      return `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
+      return `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}${initialCreditsParam}`;
     }
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-    if (siteUrl) return `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`;
+    if (siteUrl) return `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}${initialCreditsParam}`;
     return undefined;
   };
 
@@ -30,7 +31,7 @@ function LoginInner() {
     setMessage(null);
     setStatus("busy");
     const supabase = createSupabaseBrowserClient();
-    const redirectTo = authRedirectTo();
+    const redirectTo = authRedirectTo(mode === "signup");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: redirectTo ? { redirectTo } : undefined,
@@ -49,7 +50,7 @@ function LoginInner() {
       }
 
       if (mode === "signup") {
-        const emailRedirectTo = authRedirectTo();
+        const emailRedirectTo = authRedirectTo(true);
         const { error } = await supabase.auth.signUp({
           email: email.trim(),
           password,

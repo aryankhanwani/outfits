@@ -50,6 +50,26 @@ const PLAN_DETAILS = {
   },
 } as const;
 
+const HOW_STEPS = [
+  {
+    title: "Upload your photos",
+    description:
+      "Add a person photo and clothing photo for try-on, or upload a fabric swatch.",
+  },
+  {
+    title: "Choose the clothing type",
+    description:
+      "Pick what to make — shirt, dress, kurta, saree blouse, and more.",
+  },
+  {
+    title: "Download the final image",
+    description:
+      "Get a ready-to-use outfit preview you can share or use in your store.",
+  },
+] as const;
+
+const CLOTHING_TYPES = ["Shirt", "Dress", "Kurta", "Blouse", "Jacket", "Skirt"];
+
 const TESTIMONIALS = [
   {
     quote:
@@ -125,66 +145,31 @@ export default function Home() {
               See how it works
             </a>
           </div>
-
-          <div className="hero-stats">
-            <div className="stat-item">
-              <span className="stat-num">2M+</span>
-              <span className="stat-label">Images made</span>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-num">38%</span>
-              <span className="stat-label">Clearer photos</span>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-num">4.2x</span>
-              <span className="stat-label">Easy style ideas</span>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-num">&lt; 3s</span>
-              <span className="stat-label">Fast previews</span>
-            </div>
-          </div>
         </div>
       </section>
 
       <div id="demo" className="video-section">
         <div className="container">
           <p className="video-label">Product demo</p>
-          <div className="video-wrapper">
-            <div className="video-bg">
-              <div className="video-frame">
-                <div className="video-shimmer"></div>
-                <div className="video-frame-content">
-                  <span className="frame-tag">Input</span>
-                </div>
+          <div
+            className="video-placeholder"
+            role="img"
+            aria-label="Product demo video placeholder"
+          >
+            <div className="video-placeholder-pattern" aria-hidden />
+            <div className="video-placeholder-inner">
+              <div className="video-placeholder-play" aria-hidden>
+                <svg width="28" height="32" viewBox="0 0 28 32" fill="currentColor">
+                  <path d="M27.2 16.8 2.4 31.2A2 2 0 0 1 0 29.6V2.4A2 2 0 0 1 2.4.8l24.8 14.4a2 2 0 0 1 0 3.2z" />
+                </svg>
               </div>
-              <div className="video-frame">
-                <div
-                  className="video-shimmer"
-                  style={{ animationDelay: "0.8s" }}
-                ></div>
-                <div className="video-frame-content">
-                  <span className="frame-tag frame-tag-amber">Generating...</span>
-                </div>
-              </div>
-              <div className="video-frame">
-                <div
-                  className="video-shimmer"
-                  style={{ animationDelay: "1.6s" }}
-                ></div>
-                <div className="video-frame-content">
-                  <span className="frame-tag">Output</span>
-                </div>
-              </div>
+              <p className="video-placeholder-title">
+                See fabric become an outfit in the studio
+              </p>
+              <span className="video-placeholder-badge">Video coming soon</span>
             </div>
-            <div className="video-overlay">
-              <div className="play-btn">▶</div>
-              <div className="video-caption">
-                See how a fabric becomes an outfit
-              </div>
+            <div className="video-placeholder-duration" aria-hidden>
+              2:14
             </div>
           </div>
         </div>
@@ -235,40 +220,96 @@ export default function Home() {
                 and download the result.
               </p>
               <div className="steps">
-                {[
-                  "Upload your photos",
-                  "Choose the clothing type",
-                  "Download the final image",
-                ].map((step, idx) => (
+                {HOW_STEPS.map((step, idx) => (
                   <div
-                    key={step}
+                    key={step.title}
                     className={`step ${activeStep === idx ? "active" : ""}`}
                     onClick={() => setActiveStep(idx)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setActiveStep(idx);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={activeStep === idx}
                   >
                     <div className="step-num">{idx + 1}</div>
                     <div className="step-content">
-                      <h3>{step}</h3>
-                      <p>Simple steps with clear results.</p>
+                      <h3>{step.title}</h3>
+                      <p>{step.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="how-visual">
-              <div className="visual-upload">
-                <span className="visual-upload-label">Upload fabric or clothing</span>
-              </div>
-              <div className="visual-output">
-                <div className="visual-thumb"></div>
-                <div className="visual-meta">
-                  <p className="visual-meta-title">outfit-preview.jpg</p>
-                  <p className="visual-meta-sub">Ready to download</p>
-                  <div className="visual-progress">
-                    <div className="visual-progress-bar"></div>
+            <div className="how-visual" aria-live="polite">
+              {activeStep === 0 && (
+                <div className="step-panel step-panel-upload">
+                  <p className="step-panel-label">Studio upload</p>
+                  <div className="upload-slots">
+                    <div className="upload-slot">
+                      <span className="upload-slot-icon upload-slot-icon-person" />
+                      <span className="upload-slot-name">Person</span>
+                      <span className="upload-slot-hint">Optional for fabric mode</span>
+                    </div>
+                    <div className="upload-slot upload-slot-accent">
+                      <span className="upload-slot-icon upload-slot-icon-fabric" />
+                      <span className="upload-slot-name">Fabric or clothing</span>
+                      <span className="upload-slot-hint">PNG, JPG up to 10 MB</span>
+                    </div>
+                  </div>
+                  <div className="upload-drop-hint">
+                    <span className="upload-drop-plus">+</span>
+                    Drag and drop or click to browse
                   </div>
                 </div>
-              </div>
+              )}
+              {activeStep === 1 && (
+                <div className="step-panel step-panel-picker">
+                  <p className="step-panel-label">What should we make?</p>
+                  <div className="picker-grid">
+                    {CLOTHING_TYPES.map((type, idx) => (
+                      <button
+                        key={type}
+                        type="button"
+                        className={`picker-chip ${idx === 2 ? "selected" : ""}`}
+                        tabIndex={-1}
+                        aria-hidden
+                      >
+                        {type}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="picker-preview">
+                    <div className="picker-preview-swatch" />
+                    <div>
+                      <p className="picker-preview-title">Kurta from your fabric</p>
+                      <p className="picker-preview-sub">Style preview before generation</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {activeStep === 2 && (
+                <div className="step-panel step-panel-result">
+                  <p className="step-panel-label">Your preview is ready</p>
+                  <div className="result-preview">
+                    <div className="result-preview-image">
+                      <span className="result-preview-badge">AI preview</span>
+                    </div>
+                  </div>
+                  <div className="result-file">
+                    <div className="result-file-icon">✓</div>
+                    <div className="result-file-meta">
+                      <p className="result-file-name">outfit-preview.jpg</p>
+                      <p className="result-file-sub">1.2 MB · Ready to download</p>
+                    </div>
+                    <span className="result-download-btn">Download</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -533,31 +574,6 @@ export default function Home() {
           justify-content: center;
           flex-wrap: wrap;
         }
-        .hero-stats {
-          display: flex;
-          gap: 32px;
-          justify-content: center;
-          flex-wrap: wrap;
-          margin-top: 56px;
-          padding-top: 32px;
-          border-top: 1px solid var(--border);
-        }
-        .stat-num {
-          font-size: 34px;
-          display: block;
-          line-height: 1;
-        }
-        .stat-label {
-          color: var(--text-muted);
-          font-size: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.07em;
-        }
-        .stat-divider {
-          width: 1px;
-          height: 40px;
-          background: var(--border);
-        }
         .video-section {
           padding: 0 0 100px;
         }
@@ -570,82 +586,91 @@ export default function Home() {
           letter-spacing: 0.12em;
           text-transform: uppercase;
         }
-        .video-wrapper {
+        .video-placeholder {
           border: 1px solid var(--border);
           border-radius: 28px;
           overflow: hidden;
           background: var(--bg-1);
           aspect-ratio: 16 / 9;
           position: relative;
-        }
-        .video-bg {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 2px;
-          height: 100%;
+          place-items: center;
         }
-        .video-frame {
-          background: var(--bg-2);
+        .video-placeholder-pattern {
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(
+              ellipse 80% 60% at 50% 100%,
+              rgba(27, 206, 168, 0.12),
+              transparent 70%
+            ),
+            linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+        }
+        .video-placeholder-pattern::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-image:
+            linear-gradient(var(--border) 1px, transparent 1px),
+            linear-gradient(90deg, var(--border) 1px, transparent 1px);
+          background-size: 48px 48px;
+          opacity: 0.35;
+          mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+        }
+        .video-placeholder-inner {
           position: relative;
-        }
-        .video-shimmer {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(27, 206, 168, 0.04),
-            transparent
-          );
-          animation: shimmer 3s ease-in-out infinite;
-        }
-        .video-frame-content {
-          height: 100%;
+          z-index: 1;
           display: flex;
-          align-items: flex-end;
-          padding: 16px;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+          text-align: center;
+          padding: 24px;
         }
-        .frame-tag {
-          background: rgba(27, 206, 168, 0.15);
-          border: 1px solid rgba(27, 206, 168, 0.3);
-          color: var(--accent);
-          font-size: 10px;
-          font-weight: 700;
-          padding: 4px 10px;
-          border-radius: 999px;
-          text-transform: uppercase;
-        }
-        .frame-tag-amber {
-          color: var(--amber);
-          border-color: rgba(240, 180, 41, 0.3);
-          background: rgba(240, 180, 41, 0.15);
-        }
-        .video-overlay {
-          position: absolute;
-          inset: 0;
-          display: grid;
-          place-items: center;
-          background: rgba(7, 7, 15, 0.3);
-          gap: 14px;
-        }
-        .play-btn {
-          width: 72px;
-          height: 72px;
+        .video-placeholder-play {
+          width: 80px;
+          height: 80px;
           border-radius: 50%;
-          background: var(--accent);
+          background: rgba(27, 206, 168, 0.15);
+          border: 1px solid var(--border-accent);
           display: grid;
           place-items: center;
-          color: #07070f;
-          font-size: 24px;
-          box-shadow: 0 0 0 16px rgba(27, 206, 168, 0.12);
+          color: var(--accent);
+          box-shadow: 0 0 0 20px rgba(27, 206, 168, 0.06);
         }
-        .video-caption {
-          font-size: 14px;
+        .video-placeholder-play svg {
+          margin-left: 4px;
+        }
+        .video-placeholder-title {
+          font-size: 16px;
           font-weight: 600;
-          padding: 6px 18px;
+          max-width: 320px;
+          color: var(--text-secondary);
+        }
+        .video-placeholder-badge {
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          padding: 6px 14px;
           border-radius: 999px;
           border: 1px solid var(--border);
-          background: rgba(7, 7, 15, 0.7);
+          background: rgba(7, 7, 15, 0.6);
+          color: var(--text-muted);
+        }
+        .video-placeholder-duration {
+          position: absolute;
+          right: 20px;
+          bottom: 20px;
+          z-index: 1;
+          font-size: 12px;
+          font-weight: 700;
+          padding: 4px 10px;
+          border-radius: 8px;
+          background: rgba(7, 7, 15, 0.75);
+          border: 1px solid var(--border);
+          color: var(--text-muted);
         }
         section {
           padding: 100px 0;
@@ -754,62 +779,219 @@ export default function Home() {
           border-radius: 24px;
           background: var(--bg-1);
           padding: 28px;
+          min-height: 380px;
+        }
+        .step-panel {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 18px;
+          animation: step-fade 0.35s ease;
         }
-        .visual-upload {
+        @keyframes step-fade {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .step-panel-label {
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--accent);
+        }
+        .upload-slots {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .upload-slot {
           border: 2px dashed var(--border);
           border-radius: 16px;
-          min-height: 180px;
-          display: grid;
-          place-items: center;
+          padding: 20px 14px;
           background: var(--bg-2);
-        }
-        .visual-upload-label {
-          color: var(--text-muted);
-          font-size: 13px;
-          font-weight: 600;
-        }
-        .visual-output {
-          background: var(--bg-2);
-          border: 1px solid var(--border);
-          border-radius: 14px;
-          padding: 16px;
           display: flex;
-          gap: 14px;
+          flex-direction: column;
           align-items: center;
+          gap: 6px;
+          text-align: center;
         }
-        .visual-thumb {
-          width: 48px;
-          height: 48px;
-          border-radius: 10px;
-          border: 1px solid var(--border-accent);
+        .upload-slot-accent {
+          border-color: var(--border-accent);
+          background: rgba(27, 206, 168, 0.04);
+        }
+        .upload-slot-icon {
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+          background: var(--bg-3);
+        }
+        .upload-slot-icon-person {
           background: linear-gradient(
-            135deg,
-            rgba(27, 206, 168, 0.2),
-            rgba(27, 206, 168, 0.05)
+            180deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            transparent 45%
           );
         }
-        .visual-meta-title {
+        .upload-slot-icon-fabric {
+          background: linear-gradient(
+            135deg,
+            #c45c3e 0%,
+            #e8a87c 50%,
+            #6b8cce 100%
+          );
+          border-color: var(--border-accent);
+        }
+        .upload-slot-name {
           font-size: 13px;
           font-weight: 700;
         }
-        .visual-meta-sub {
+        .upload-slot-hint {
+          font-size: 11px;
+          color: var(--text-muted);
+        }
+        .upload-drop-hint {
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 14px;
+          text-align: center;
+          font-size: 13px;
+          color: var(--text-secondary);
+          background: var(--bg-2);
+        }
+        .upload-drop-plus {
+          display: inline-block;
+          margin-right: 6px;
+          color: var(--accent);
+          font-weight: 700;
+        }
+        .picker-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+        }
+        .picker-chip {
+          padding: 12px 8px;
+          border-radius: 12px;
+          border: 1px solid var(--border);
+          background: var(--bg-2);
+          color: var(--text-secondary);
+          font-size: 12px;
+          font-weight: 600;
+          cursor: default;
+        }
+        .picker-chip.selected {
+          border-color: var(--border-accent);
+          background: var(--accent-dim);
+          color: var(--accent);
+        }
+        .picker-preview {
+          display: flex;
+          gap: 14px;
+          align-items: center;
+          padding: 16px;
+          border-radius: 14px;
+          border: 1px solid var(--border);
+          background: var(--bg-2);
+        }
+        .picker-preview-swatch {
+          width: 56px;
+          height: 56px;
+          border-radius: 12px;
+          flex-shrink: 0;
+          background: linear-gradient(
+            135deg,
+            #c45c3e 0%,
+            #e8a87c 40%,
+            #6b8cce 100%
+          );
+          border: 1px solid var(--border);
+        }
+        .picker-preview-title {
+          font-size: 14px;
+          font-weight: 700;
+          margin-bottom: 4px;
+        }
+        .picker-preview-sub {
           font-size: 12px;
           color: var(--text-muted);
         }
-        .visual-progress {
-          margin-top: 8px;
-          height: 4px;
-          border-radius: 999px;
-          background: var(--bg-3);
+        .result-preview {
+          border-radius: 16px;
           overflow: hidden;
+          border: 1px solid var(--border);
         }
-        .visual-progress-bar {
-          width: 72%;
-          height: 100%;
+        .result-preview-image {
+          aspect-ratio: 4 / 5;
+          max-height: 200px;
+          background: linear-gradient(
+            160deg,
+            var(--bg-3) 0%,
+            rgba(27, 206, 168, 0.15) 50%,
+            var(--bg-2) 100%
+          );
+          position: relative;
+          display: grid;
+          place-items: end;
+          padding: 14px;
+        }
+        .result-preview-badge {
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          padding: 4px 10px;
+          border-radius: 999px;
+          background: rgba(7, 7, 15, 0.7);
+          border: 1px solid var(--border-accent);
+          color: var(--accent);
+        }
+        .result-file {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 16px;
+          border-radius: 14px;
+          border: 1px solid var(--border-accent);
+          background: var(--bg-2);
+        }
+        .result-file-icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: var(--accent-dim);
+          color: var(--accent);
+          display: grid;
+          place-items: center;
+          font-size: 14px;
+          font-weight: 700;
+          flex-shrink: 0;
+        }
+        .result-file-name {
+          font-size: 13px;
+          font-weight: 700;
+        }
+        .result-file-sub {
+          font-size: 12px;
+          color: var(--text-muted);
+        }
+        .result-file-meta {
+          flex: 1;
+          min-width: 0;
+        }
+        .result-download-btn {
+          font-size: 12px;
+          font-weight: 700;
+          padding: 8px 14px;
+          border-radius: 10px;
           background: var(--accent);
+          color: #07070f;
+          flex-shrink: 0;
         }
         .pricing-toggle {
           display: flex;
@@ -1055,15 +1237,6 @@ export default function Home() {
           max-width: 520px;
           margin: 0 auto 30px;
         }
-        @keyframes shimmer {
-          0%,
-          100% {
-            transform: translateX(-100%);
-          }
-          50% {
-            transform: translateX(100%);
-          }
-        }
         @media (max-width: 900px) {
           .features-grid,
           .pricing-grid,
@@ -1073,8 +1246,8 @@ export default function Home() {
           .hero {
             padding: 72px 0 60px;
           }
-          .stat-divider {
-            display: none;
+          .upload-slots {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
